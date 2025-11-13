@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "framework": "nextjs",
+  "installCommand": "npm ci",
+  "outputDirectory": ".next",
+  "env": {
+    "DEEPSEEK_API_KEY": "@deepseek_api_key",
+    "API_5118_KEY": "@api_5118_key", 
+    "FEISHU_WEBHOOK_URL": "@feishu_webhook_url"
+  }
+}
