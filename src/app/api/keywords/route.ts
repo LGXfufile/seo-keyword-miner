@@ -66,7 +66,7 @@ async function call5118API(keyword: string) {
     const params = {
       keyword: keyword,
       page_index: 1,
-      page_size: 20,
+      page_size: 50,
       sort_fields: 4,
       sort_type: 'desc',
       filter: 2
@@ -157,13 +157,86 @@ export async function POST(request: NextRequest) {
           bidword_wisepv: Math.floor(Math.random() * 700) + 60,
           sem_reason: '',
           sem_price: `${(Math.random() * 3 + 0.2).toFixed(2)}~${(Math.random() * 10 + 2).toFixed(2)}`
+        },
+        {
+          keyword: `${keyword}教程`,
+          index: Math.floor(Math.random() * 1300) + 40,
+          mobile_index: Math.floor(Math.random() * 900) + 20,
+          haosou_index: Math.floor(Math.random() * 700) + 15,
+          long_keyword_count: Math.floor(Math.random() * 35000) + 400,
+          bidword_company_count: Math.floor(Math.random() * 10) + 1,
+          page_url: '',
+          bidword_kwc: Math.floor(Math.random() * 3) + 1,
+          bidword_pcpv: Math.floor(Math.random() * 300) + 20,
+          bidword_wisepv: Math.floor(Math.random() * 600) + 40,
+          sem_reason: '',
+          sem_price: `${(Math.random() * 2.5 + 0.1).toFixed(2)}~${(Math.random() * 8 + 1).toFixed(2)}`
+        },
+        {
+          keyword: `${keyword}攻略`,
+          index: Math.floor(Math.random() * 1100) + 30,
+          mobile_index: Math.floor(Math.random() * 800) + 15,
+          haosou_index: Math.floor(Math.random() * 600) + 10,
+          long_keyword_count: Math.floor(Math.random() * 30000) + 300,
+          bidword_company_count: Math.floor(Math.random() * 8) + 1,
+          page_url: '',
+          bidword_kwc: Math.floor(Math.random() * 3) + 1,
+          bidword_pcpv: Math.floor(Math.random() * 250) + 15,
+          bidword_wisepv: Math.floor(Math.random() * 500) + 30,
+          sem_reason: '',
+          sem_price: `${(Math.random() * 2 + 0.1).toFixed(2)}~${(Math.random() * 6 + 1).toFixed(2)}`
+        },
+        {
+          keyword: `最佳${keyword}`,
+          index: Math.floor(Math.random() * 900) + 25,
+          mobile_index: Math.floor(Math.random() * 700) + 12,
+          haosou_index: Math.floor(Math.random() * 500) + 8,
+          long_keyword_count: Math.floor(Math.random() * 25000) + 200,
+          bidword_company_count: Math.floor(Math.random() * 6) + 1,
+          page_url: '',
+          bidword_kwc: Math.floor(Math.random() * 3) + 1,
+          bidword_pcpv: Math.floor(Math.random() * 200) + 10,
+          bidword_wisepv: Math.floor(Math.random() * 400) + 20,
+          sem_reason: '',
+          sem_price: `${(Math.random() * 1.5 + 0.1).toFixed(2)}~${(Math.random() * 4 + 0.5).toFixed(2)}`
+        },
+        {
+          keyword: `${keyword}选择`,
+          index: Math.floor(Math.random() * 800) + 20,
+          mobile_index: Math.floor(Math.random() * 600) + 10,
+          haosou_index: Math.floor(Math.random() * 400) + 5,
+          long_keyword_count: Math.floor(Math.random() * 20000) + 150,
+          bidword_company_count: Math.floor(Math.random() * 5) + 1,
+          page_url: '',
+          bidword_kwc: Math.floor(Math.random() * 3) + 1,
+          bidword_pcpv: Math.floor(Math.random() * 150) + 8,
+          bidword_wisepv: Math.floor(Math.random() * 300) + 15,
+          sem_reason: '',
+          sem_price: `${(Math.random() * 1 + 0.05).toFixed(2)}~${(Math.random() * 3 + 0.3).toFixed(2)}`
+        },
+        {
+          keyword: `${keyword}排行榜`,
+          index: Math.floor(Math.random() * 700) + 15,
+          mobile_index: Math.floor(Math.random() * 500) + 8,
+          haosou_index: Math.floor(Math.random() * 300) + 3,
+          long_keyword_count: Math.floor(Math.random() * 15000) + 100,
+          bidword_company_count: Math.floor(Math.random() * 4) + 1,
+          page_url: '',
+          bidword_kwc: Math.floor(Math.random() * 3) + 1,
+          bidword_pcpv: Math.floor(Math.random() * 120) + 5,
+          bidword_wisepv: Math.floor(Math.random() * 250) + 10,
+          sem_reason: '',
+          sem_price: `${(Math.random() * 0.8 + 0.05).toFixed(2)}~${(Math.random() * 2.5 + 0.2).toFixed(2)}`
         }
       ];
     }
 
-    // 为每个关键词生成AI分析
+    // 优化AI分析策略：只为前10个高价值关键词生成AI分析
+    const topKeywords = keywords.slice(0, 10);
+    const remainingKeywords = keywords.slice(10);
+
     const keywordsWithAI = await Promise.all(
-      keywords.slice(0, 5).map(async (kw) => {
+      topKeywords.map(async (kw) => {
         const aiPrompt = `分析关键词"${kw.keyword}"的SEO价值和商业潜力。
 数据参考：流量指数${kw.index}，移动指数${kw.mobile_index}，长尾词数${kw.long_keyword_count}，竞争度${kw.bidword_kwc === 1 ? '高' : kw.bidword_kwc === 2 ? '中' : '低'}。
 请用1-2句话简洁分析其价值和使用建议。`;
@@ -177,6 +250,14 @@ export async function POST(request: NextRequest) {
       })
     );
 
+    // 为剩余关键词生成简单分析（不调用AI）
+    const remainingKeywordsWithAnalysis = remainingKeywords.map(kw => ({
+      ...kw,
+      ai_analysis: `"${kw.keyword}"是一个${kw.index > 1000 ? '高' : kw.index > 500 ? '中等' : '低'}流量关键词，${kw.bidword_kwc === 3 ? '竞争较低，适合新站优化' : kw.bidword_kwc === 2 ? '竞争适中，需要持续优化' : '竞争激烈，建议选择长尾变体'}`
+    }));
+
+    const allKeywords = [...keywordsWithAI, ...remainingKeywordsWithAnalysis];
+
     // 发送飞书通知
     try {
       await fetch('https://open.feishu.cn/open-apis/bot/v2/hook/fd8c7806-5aca-4dbf-b621-8b3f1c271bbd', {
@@ -187,7 +268,7 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({
           msg_type: 'text',
           content: {
-            text: `谷歌长尾词监控: 用户搜索了关键词"${keyword}"，找到${keywordsWithAI.length}个相关词汇，总流量指数${keywordsWithAI.reduce((sum, kw) => sum + kw.index, 0)}`
+            text: `谷歌长尾词监控: 用户搜索了关键词"${keyword}"，找到${allKeywords.length}个相关词汇，总流量指数${allKeywords.reduce((sum, kw) => sum + kw.index, 0)}`
           }
         })
       });
@@ -196,8 +277,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      keywords: keywordsWithAI,
-      total: keywordsWithAI.length
+      keywords: allKeywords,
+      total: allKeywords.length
     });
 
   } catch (error) {
