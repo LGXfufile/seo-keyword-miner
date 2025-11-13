@@ -111,11 +111,9 @@ export async function POST(request: NextRequest) {
           haosou_index: Math.floor(Math.random() * 1000) + 30,
           long_keyword_count: Math.floor(Math.random() * 50000) + 1000,
           bidword_company_count: Math.floor(Math.random() * 20) + 1,
-          page_url: '',
           bidword_kwc: Math.floor(Math.random() * 3) + 1,
           bidword_pcpv: Math.floor(Math.random() * 500) + 50,
           bidword_wisepv: Math.floor(Math.random() * 1000) + 100,
-          sem_reason: '',
           sem_price: `${(Math.random() * 5 + 0.5).toFixed(2)}~${(Math.random() * 15 + 5).toFixed(2)}`
         },
         {
@@ -125,11 +123,9 @@ export async function POST(request: NextRequest) {
           haosou_index: Math.floor(Math.random() * 900) + 25,
           long_keyword_count: Math.floor(Math.random() * 45000) + 800,
           bidword_company_count: Math.floor(Math.random() * 15) + 1,
-          page_url: '',
           bidword_kwc: Math.floor(Math.random() * 3) + 1,
           bidword_pcpv: Math.floor(Math.random() * 400) + 30,
           bidword_wisepv: Math.floor(Math.random() * 800) + 80,
-          sem_reason: '',
           sem_price: `${(Math.random() * 4 + 0.3).toFixed(2)}~${(Math.random() * 12 + 3).toFixed(2)}`
         },
         {
@@ -139,11 +135,9 @@ export async function POST(request: NextRequest) {
           haosou_index: Math.floor(Math.random() * 800) + 20,
           long_keyword_count: Math.floor(Math.random() * 40000) + 600,
           bidword_company_count: Math.floor(Math.random() * 12) + 1,
-          page_url: '',
           bidword_kwc: Math.floor(Math.random() * 3) + 1,
           bidword_pcpv: Math.floor(Math.random() * 350) + 25,
           bidword_wisepv: Math.floor(Math.random() * 700) + 60,
-          sem_reason: '',
           sem_price: `${(Math.random() * 3 + 0.2).toFixed(2)}~${(Math.random() * 10 + 2).toFixed(2)}`
         },
         {
@@ -153,11 +147,9 @@ export async function POST(request: NextRequest) {
           haosou_index: Math.floor(Math.random() * 700) + 15,
           long_keyword_count: Math.floor(Math.random() * 35000) + 400,
           bidword_company_count: Math.floor(Math.random() * 10) + 1,
-          page_url: '',
           bidword_kwc: Math.floor(Math.random() * 3) + 1,
           bidword_pcpv: Math.floor(Math.random() * 300) + 20,
           bidword_wisepv: Math.floor(Math.random() * 600) + 40,
-          sem_reason: '',
           sem_price: `${(Math.random() * 2.5 + 0.1).toFixed(2)}~${(Math.random() * 8 + 1).toFixed(2)}`
         },
         {
@@ -167,11 +159,9 @@ export async function POST(request: NextRequest) {
           haosou_index: Math.floor(Math.random() * 600) + 10,
           long_keyword_count: Math.floor(Math.random() * 30000) + 300,
           bidword_company_count: Math.floor(Math.random() * 8) + 1,
-          page_url: '',
           bidword_kwc: Math.floor(Math.random() * 3) + 1,
           bidword_pcpv: Math.floor(Math.random() * 250) + 15,
           bidword_wisepv: Math.floor(Math.random() * 500) + 30,
-          sem_reason: '',
           sem_price: `${(Math.random() * 2 + 0.1).toFixed(2)}~${(Math.random() * 6 + 1).toFixed(2)}`
         },
         {
@@ -181,11 +171,9 @@ export async function POST(request: NextRequest) {
           haosou_index: Math.floor(Math.random() * 500) + 8,
           long_keyword_count: Math.floor(Math.random() * 25000) + 200,
           bidword_company_count: Math.floor(Math.random() * 6) + 1,
-          page_url: '',
           bidword_kwc: Math.floor(Math.random() * 3) + 1,
           bidword_pcpv: Math.floor(Math.random() * 200) + 10,
           bidword_wisepv: Math.floor(Math.random() * 400) + 20,
-          sem_reason: '',
           sem_price: `${(Math.random() * 1.5 + 0.1).toFixed(2)}~${(Math.random() * 4 + 0.5).toFixed(2)}`
         },
         {
@@ -195,11 +183,9 @@ export async function POST(request: NextRequest) {
           haosou_index: Math.floor(Math.random() * 400) + 5,
           long_keyword_count: Math.floor(Math.random() * 20000) + 150,
           bidword_company_count: Math.floor(Math.random() * 5) + 1,
-          page_url: '',
           bidword_kwc: Math.floor(Math.random() * 3) + 1,
           bidword_pcpv: Math.floor(Math.random() * 150) + 8,
           bidword_wisepv: Math.floor(Math.random() * 300) + 15,
-          sem_reason: '',
           sem_price: `${(Math.random() * 1 + 0.05).toFixed(2)}~${(Math.random() * 3 + 0.3).toFixed(2)}`
         },
         {
@@ -209,11 +195,9 @@ export async function POST(request: NextRequest) {
           haosou_index: Math.floor(Math.random() * 300) + 3,
           long_keyword_count: Math.floor(Math.random() * 15000) + 100,
           bidword_company_count: Math.floor(Math.random() * 4) + 1,
-          page_url: '',
           bidword_kwc: Math.floor(Math.random() * 3) + 1,
           bidword_pcpv: Math.floor(Math.random() * 120) + 5,
           bidword_wisepv: Math.floor(Math.random() * 250) + 10,
-          sem_reason: '',
           sem_price: `${(Math.random() * 0.8 + 0.05).toFixed(2)}~${(Math.random() * 2.5 + 0.2).toFixed(2)}`
         }
       ];
