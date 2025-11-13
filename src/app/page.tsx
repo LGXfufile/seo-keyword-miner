@@ -8,6 +8,8 @@ import { StatsOverview } from '@/components/StatsOverview';
 
 export default function HomePage() {
   const [keywords, setKeywords] = useState([]);
+  const [keywordGroups, setKeywordGroups] = useState(null);
+  const [stats, setStats] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -26,6 +28,8 @@ export default function HomePage() {
       
       const data = await response.json();
       setKeywords(data.keywords || []);
+      setKeywordGroups(data.groups || null);
+      setStats(data.stats || null);
     } catch (error) {
       console.error('Search failed:', error);
     } finally {
@@ -142,8 +146,8 @@ export default function HomePage() {
               </div>
             )}
             
-            <StatsOverview keywords={keywords} isLoading={isLoading} />
-            <KeywordResults keywords={keywords} isLoading={isLoading} />
+            <StatsOverview keywords={keywords} keywordGroups={keywordGroups} stats={stats} isLoading={isLoading} />
+            <KeywordResults keywords={keywords} keywordGroups={keywordGroups} isLoading={isLoading} />
           </div>
         </div>
       )}

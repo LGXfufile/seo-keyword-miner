@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { sortKeywordsByGoldenScore, groupKeywordsByCategory, type Keyword } from '@/lib/keywordScoring';
 
 interface KeywordApiResponse {
   errcode: string;
@@ -9,20 +10,7 @@ interface KeywordApiResponse {
     page_count: number;
     page_index: number;
     page_size: number;
-    word: Array<{
-      keyword: string;
-      index: number;
-      mobile_index: number;
-      haosou_index: number;
-      long_keyword_count: number;
-      bidword_company_count: number;
-      page_url: string;
-      bidword_kwc: number;
-      bidword_pcpv: number;
-      bidword_wisepv: number;
-      sem_reason: string;
-      sem_price: string;
-    }>;
+    word: Keyword[];
   };
 }
 
@@ -59,7 +47,7 @@ async function callDeepSeekAPI(prompt: string) {
   }
 }
 
-async function call5118API(keyword: string) {
+async function call5118API(keyword: string): Promise<Keyword[]> {
   try {
     const apiKey = process.env.API_5118_KEY || 'your-5118-api-key';
     
@@ -231,32 +219,45 @@ export async function POST(request: NextRequest) {
       ];
     }
 
-    // 优化AI分析策略：只为前10个高价值关键词生成AI分析
-    const topKeywords = keywords.slice(0, 10);
-    const remainingKeywords = keywords.slice(10);
+    // 先对所有关键词进行黄金评分和排序
+    const sortedKeywords = sortKeywordsByGoldenScore(keywords);
+    
+    // 优化AI分析策略：为黄金关键词(前10个)生成深度AI分析
+    const topKeywords = sortedKeywords.slice(0, 10);
+    const remainingKeywords = sortedKeywords.slice(10);
 
     const keywordsWithAI = await Promise.all(
       topKeywords.map(async (kw) => {
-        const aiPrompt = `分析关键词"${kw.keyword}"的SEO价值和商业潜力。
-数据参考：流量指数${kw.index}，移动指数${kw.mobile_index}，长尾词数${kw.long_keyword_count}，竞争度${kw.bidword_kwc === 1 ? '高' : kw.bidword_kwc === 2 ? '中' : '低'}。
-请用1-2句话简洁分析其价值和使用建议。`;
+        const competitionText = kw.competition_level === 'low' ? '低竞争' : 
+                              kw.competition_level === 'medium' ? '中等竞争' : '高竞争';
+        
+        const aiPrompt = `作为SEO专家，分析关键词"${kw.keyword}"(黄金评分${kw.golden_score}分)：
+数据：流量指数${kw.index}，移动指数${kw.mobile_index}，长尾词数${kw.long_keyword_count}，${competitionText}
+请从以下角度分析：1)为什么推荐 2)如何优化 3)预期效果。用2-3句话回答。`;
 
         const aiAnalysis = await callDeepSeekAPI(aiPrompt);
         
         return {
           ...kw,
-          ai_analysis: aiAnalysis || `"${kw.keyword}"是一个${kw.index > 1000 ? '高' : kw.index > 500 ? '中等' : '低'}流量关键词，${kw.bidword_kwc === 3 ? '竞争较低，适合新站优化' : kw.bidword_kwc === 2 ? '竞争适中，需要持续优化' : '竞争激烈，建议选择长尾变体'}`
+          ai_analysis: aiAnalysis || kw.recommendation_reason || `推荐理由：${competitionText}，价值评分${kw.value_score}分，适合优先优化`
         };
       })
     );
 
-    // 为剩余关键词生成简单分析（不调用AI）
+    // 为剩余关键词生成基于评分的智能分析
     const remainingKeywordsWithAnalysis = remainingKeywords.map(kw => ({
       ...kw,
-      ai_analysis: `"${kw.keyword}"是一个${kw.index > 1000 ? '高' : kw.index > 500 ? '中等' : '低'}流量关键词，${kw.bidword_kwc === 3 ? '竞争较低，适合新站优化' : kw.bidword_kwc === 2 ? '竞争适中，需要持续优化' : '竞争激烈，建议选择长尾变体'}`
+      ai_analysis: `${kw.recommendation_reason} - 黄金评分${kw.golden_score}分，价值评分${kw.value_score}分。${
+        kw.competition_level === 'low' ? '竞争较低，建议优先布局' : 
+        kw.competition_level === 'medium' ? '竞争适中，需持续优化' : 
+        '竞争激烈，建议长尾策略'
+      }`
     }));
 
     const allKeywords = [...keywordsWithAI, ...remainingKeywordsWithAnalysis];
+    
+    // 关键词分组
+    const groupedKeywords = groupKeywordsByCategory(allKeywords);
 
     // 发送飞书通知
     try {
@@ -268,7 +269,7 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({
           msg_type: 'text',
           content: {
-            text: `谷歌长尾词监控: 用户搜索了关键词"${keyword}"，找到${allKeywords.length}个相关词汇，总流量指数${allKeywords.reduce((sum, kw) => sum + kw.index, 0)}`
+            text: `谷歌长尾词监控: 用户搜索了关键词"${keyword}"，找到${allKeywords.length}个相关词汇，其中${groupedKeywords.golden.length}个黄金关键词，总流量指数${allKeywords.reduce((sum, kw) => sum + kw.index, 0)}`
           }
         })
       });
@@ -278,7 +279,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       keywords: allKeywords,
-      total: allKeywords.length
+      total: allKeywords.length,
+      groups: groupedKeywords,
+      stats: {
+        golden_count: groupedKeywords.golden.length,
+        high_value_count: groupedKeywords.highValue.length,
+        low_competition_count: groupedKeywords.lowCompetition.length,
+        avg_golden_score: Math.round(allKeywords.reduce((sum, kw) => sum + (kw.golden_score || 0), 0) / allKeywords.length)
+      }
     });
 
   } catch (error) {
